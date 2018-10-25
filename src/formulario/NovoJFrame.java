@@ -20,137 +20,134 @@ public class NovoJFrame extends javax.swing.JFrame {
     public NovoJFrame() {
         initComponents();
     }
-    ArrayList<String> atributos = new ArrayList<String>();
-    
-    
-    String obj = "";   
+    //ArrayList<String> atributos = new ArrayList<String>();
+    ArrayList<Meta> arrayMetaGlobal = new ArrayList<>();
+
+    String obj = "";
     String sql = "";
     String aux = "";
-    
-    public void gerarObj(){
-          
-        if (atributos.size() == 0)
-        {          
-            JOptionPane.showMessageDialog(null,"Sem atributos");
-            return;
+
+    public String gerarOb(ArrayList<Meta> arraym) {
+
+        if (arraym.size() == 0) {
+            JOptionPane.showMessageDialog(null, "Sem atributos");
+            return null;
         }
-        obj ="<?php \nclass " + nomeProprio(tabelaText.getText()) + "{\n";
-        for (int i = 0; i< atributos.size();i++){
-            obj = obj + "\tprivate $" + atributos.get(i) + ";\n";            
-            aux = nomeProprio(atributos.get(i));
-            obj = obj + "\tpublic function set" + aux + "($new"+aux+"){\n"
-                    + "\t\t$this->" + atributos.get(i) + " = $new"+aux+";\n\t}\n"
-                    + "\tpublic function get"+aux+"(){\n"
-                    + "\t\treturn $this->" + atributos.get(i) + ";\n\t}\n\n";
-             aux = "";
+        obj = "<?php \nclass " + nomeProprio(tabelaText.getText()) + "{\n";
+        for (int i = 0; i < arraym.size(); i++) {
+            obj = obj + "\tprivate $" + arraym.get(i).getNome() + ";\n";
+            aux = nomeProprio(arraym.get(i).getNome());
+            obj = obj + "\tpublic function set" + aux + "($new" + aux + "){\n"
+                    + "\t\t$this->" + arraym.get(i).getNome() + " = $new" + aux + ";\n\t}\n"
+                    + "\tpublic function get" + aux + "(){\n"
+                    + "\t\treturn $this->" + arraym.get(i).getNome() + ";\n\t}\n\n";
+            aux = "";
         }
         obj = obj + "\n}\n?>";
+        return obj;
     }
-    public String nomeProprio(String str){
-        
-            str = str.substring(0, 1).toUpperCase() + str.substring(1,str.length());
-        
-        
+
+    public String nomeProprio(String str) {
+
+        str = str.substring(0, 1).toUpperCase() + str.substring(1, str.length());
+
         return str;
     }
-    public void gerarBd(){
-        
-        if (atributos.size() == 0)
-        {          
-            JOptionPane.showMessageDialog(null,"Sem atributos");
-            return;
+
+    public String gerarDao(ArrayList<Meta> arrayMeta) {
+
+        if (arrayMeta.size() == 0) {
+            JOptionPane.showMessageDialog(null, "Sem atributos");
+            return null;
         }
-        sql ="<?php\n" +
-        "require_once(\"banco.php\");\n" +
-        "require_once(\""+tabelaText.getText()+".php\");\n\n" +
-        "class BD" + nomeProprio(tabelaText.getText())+"{\n"
+        sql = "<?php\n"
+                + "require_once(\"banco.php\");\n"
+                + "require_once(\"" + tabelaText.getText() + ".php\");\n\n"
+                + "class BD" + nomeProprio(tabelaText.getText()) + "{\n"
                 //
                 //
                 //Adicionar
                 //
                 //
-          + "\tpublic function adicionar($"+ nomeProprio(tabelaText.getText())+"){\n "
-              + "\t\t$conexao = banco::getConexao();\n";
-        for (int i = 0; i  < atributos.size();i++){       
-            aux = nomeProprio(atributos.get(i));
-            sql = sql + "\t\t$"+atributos.get(i) + " = mysql_real_escape_string($" + nomeProprio(tabelaText.getText()) + "->get" + aux + "());\n";
+                + "\tpublic function adicionar($" + nomeProprio(tabelaText.getText()) + "){\n "
+                + "\t\t$conexao = banco::getConexao();\n";
+        for (int i = 0; i < arrayMeta.size(); i++) {
+            aux = nomeProprio(arrayMeta.get(i).getNome());
+            sql = sql + "\t\t$" + arrayMeta.get(i).getNome() + " = mysql_real_escape_string($" + nomeProprio(tabelaText.getText()) + "->get" + aux + "());\n";
         }
-        sql = sql + "\t\t$sql = \"INSERT INTO "+tabelaText.getText() + " (";
-        for (int i = 0; i  < atributos.size();i++){
-            if (i != atributos.size()-1){
-                sql = sql + atributos.get(i) + ", ";
-            }
-            else{                          
-                sql = sql + atributos.get(i) + ") VALUES ("; //Quando for o ultimo
+        sql = sql + "\t\t$sql = \"INSERT INTO " + tabelaText.getText() + " (";
+        for (int i = 0; i < arrayMeta.size(); i++) {
+            if (i != arrayMeta.size() - 1) {
+                sql = sql + arrayMeta.get(i).getNome() + ", ";
+            } else {
+                sql = sql + arrayMeta.get(i).getNome() + ") VALUES ("; //Quando for o ultimo
             }
         }
-        for (int i = 0; i  < atributos.size();i++){
-            if (i != atributos.size()-1){
-                sql = sql + "'&" +atributos.get(i) + "', ";
-            }
-            else{                          
-                sql = sql + "'$" + atributos.get(i) + "')\";"
+        for (int i = 0; i < arrayMeta.size(); i++) {
+            if (i != arrayMeta.size() - 1) {
+                sql = sql + "'&" + arrayMeta.get(i).getNome() + "', ";
+            } else {
+                sql = sql + "'$" + arrayMeta.get(i).getNome() + "')\";"
                         + "\n\t\tmysql_query($sql, $conexao);\n\t}"; //Quando for o ultimo
             }
         }
-        
-        
+
         //
         //
         //Deletar
         //
         //
         sql = sql + "\n\n\t"
-                + "public function deletar($"+ nomeProprio(tabelaText.getText())+"){\n "
+                + "public function deletar($" + nomeProprio(tabelaText.getText()) + "){\n "
                 + "\t\t$conexao = banco::getConexao();\n";
-            sql = sql + "\t\t$"+atributos.get(0) + " = mysql_real_escape_string($" + nomeProprio(tabelaText.getText()) + "->get" + nomeProprio(atributos.get(0)) + "());\n";
-        
-        sql = sql + "\t\t$sql = \"DELETE FROM  "+tabelaText.getText() + " WHERE "+atributos.get(0)+" = $"+ atributos.get(0) +"\";" 
+        sql = sql + "\t\t$" + arrayMeta.get(0).getNome() + " = mysql_real_escape_string($" + nomeProprio(tabelaText.getText()) + "->get" + nomeProprio(arrayMeta.get(0).getNome()) + "());\n";
+
+        sql = sql + "\t\t$sql = \"DELETE FROM  " + tabelaText.getText() + " WHERE " + arrayMeta.get(0).getNome() + " = $" + arrayMeta.get(0).getNome() + "\";"
                 + "\n\t\tmysql_query($sql, $conexao);\n\t}";
-        
+
         //
         //
         //Alterar
         //
         //
         sql = sql + "\n\n\t"
-                + "public function alterar($"+ nomeProprio(tabelaText.getText())+"){\n "
+                + "public function alterar($" + nomeProprio(tabelaText.getText()) + "){\n "
                 + "\t\t$conexao = banco::getConexao();\n";
-        for (int i = 0; i  < atributos.size();i++){       
-            aux = nomeProprio(atributos.get(i));
-            sql = sql + "\t\t$"+atributos.get(i) + " = mysql_real_escape_string($" + nomeProprio(tabelaText.getText()) + "->get" + aux + "());\n";
+        for (int i = 0; i < arrayMeta.size(); i++) {
+            aux = nomeProprio(arrayMeta.get(i).getNome());
+            sql = sql + "\t\t$" + arrayMeta.get(i).getNome() + " = mysql_real_escape_string($" + nomeProprio(tabelaText.getText()) + "->get" + aux + "());\n";
         }
-        sql = sql + "\t\t$sql = \"UPDATE "+tabelaText.getText() + " SET ";
-        for (int i = 1; i  < atributos.size();i++){
-            if (i != atributos.size()-1){
-                sql = sql + atributos.get(i) + " = '$" + atributos.get(i)+"', ";
-            }
-            else{
-                sql = sql + atributos.get(i) + " = '$" + atributos.get(i)+"' WHERE "  + atributos.get(0) + " = '$" + atributos.get(0)+"'\""
+        sql = sql + "\t\t$sql = \"UPDATE " + tabelaText.getText() + " SET ";
+        for (int i = 1; i < arrayMeta.size(); i++) {
+            if (i != arrayMeta.size() - 1) {
+                sql = sql + arrayMeta.get(i).getNome() + " = '$" + arrayMeta.get(i).getNome() + "', ";
+            } else {
+                sql = sql + arrayMeta.get(i).getNome() + " = '$" + arrayMeta.get(i).getNome() + "' WHERE " + arrayMeta.get(0).getNome() + " = '$" + arrayMeta.get(0).getNome() + "'\""
                         + "\n\t\tmysql_query($sql, $conexao);\n\t}";
             }
-                    
+
         }
-        
+
         //
         //
         //Lista
         //
         //
-        sql = sql + "\n\n\t" + "public function listar() {\n" +
-        "\t\t$conexao = banco::getConexao();\n" +
-        "\t\t$sql = \"SELECT * FROM " + tabelaText.getText() +"\"\n" +
-        "\t\t$consulta = mysql_query($sql, $conexao);\n" +
-        "\t\t$resposta = array();\n" +
-        "\t\twhile ($linha = mysql_fetch_array($consulta)) {"
+        sql = sql + "\n\n\t" + "public function listar() {\n"
+                + "\t\t$conexao = banco::getConexao();\n"
+                + "\t\t$sql = \"SELECT * FROM " + tabelaText.getText() + "\"\n"
+                + "\t\t$consulta = mysql_query($sql, $conexao);\n"
+                + "\t\t$resposta = array();\n"
+                + "\t\twhile ($linha = mysql_fetch_array($consulta)) {"
                 + "\n\t\t\t$" + tabelaText.getText() + " = new " + tabelaText.getText() + "();";
-        for (int i = 0; i  < atributos.size();i++){
-            sql = sql +  "\n\t\t\t$" + tabelaText.getText()+"->set"+nomeProprio(atributos.get(i))+"($linha[\"" + atributos.get(i) + "\"]);";
-        }   
-        sql = sql + "\n\t\t\t$resposta[] = $"+tabelaText.getText()+";\n" +
-        "\t\t}\n";
+        for (int i = 0; i < arrayMeta.size(); i++) {
+            sql = sql + "\n\t\t\t$" + tabelaText.getText() + "->set" + nomeProprio(arrayMeta.get(i).getNome()) + "($linha[\"" + arrayMeta.get(i).getNome() + "\"]);";
+        }
+        sql = sql + "\n\t\t\t$resposta[] = $" + tabelaText.getText() + ";\n"
+                + "\t\t}\n";
         sql = sql + "\t" + "return $resposta;\n";
         sql = sql + "\t}\n}";
+        return sql;
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -228,7 +225,7 @@ public class NovoJFrame extends javax.swing.JFrame {
         jTextinstrucoes.setText("Insira o nome da tabela, em seguida o atributo que será sua chave primaria. Depois clieque em \"Adicionar\".\nAgora adicione os demais atributos. Depois de adicionar todos os atributos. clique em \"Gerar Repositorio\"\npara elaborar o codigo de conexão do objeto com o banco de dados. Por fim copie os itens dos textArea\nabaixo e adicione em seus arquivos *.php, depois é so clicar em \"Limpar\" para começar a cadastrar mais um Objeto;");
         jScrollPane3.setViewportView(jTextinstrucoes);
 
-        jComboTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "INT", "VARCHAR(255)", "VARCHAR(100)", "VARCHAR(20)" }));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -306,20 +303,21 @@ public class NovoJFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
-
-        if (!"".equals(atributoText.getText())){
-            for (int i = 0; i< atributos.size();i++) {
-                if (atributos.get(i).equals(atributoText.getText())){
+        //ArrayList<Meta> arrayMeta = new ArrayList<>();
+        Meta meta = new Meta();
+        if (!"".equals(atributoText.getText())) {
+            for (int i = 0; i < arrayMetaGlobal.size(); i++) {
+                if (arrayMetaGlobal.get(i).getNome().equals(atributoText.getText())) {
                     JOptionPane.showMessageDialog(null, "Atributo ja adicionado");
                     return;
                 }
-                
             }
-            atributos.add(atributoText.getText());
-            
+            meta.setNome(atributoText.getText());
+            meta.setTipo(jComboTipo.getItemAt(jComboTipo.getSelectedIndex()));
+            arrayMetaGlobal.add(meta);
         }
-        gerarObj();
-        objText.setText(obj);
+
+        objText.setText(gerarOb(arrayMetaGlobal));
         atributoText.setText("");
         tabelaText.enable(false);
 
@@ -330,19 +328,20 @@ public class NovoJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_atributoTextActionPerformed
 
     private void bdButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bdButtonActionPerformed
-        gerarBd();
-        repositorioText.setText(sql);
         
+        repositorioText.setText(gerarDao(arrayMetaGlobal));
+
     }//GEN-LAST:event_bdButtonActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        JOptionPane.showMessageDialog(null, "Campos limpos");
-        atributos.clear();
+        //arrayMeta.clear();
         repositorioText.setText("");
         objText.setText("");
         tabelaText.setText("");
         tabelaText.enable(true);
         atributoText.setText("");
+        JOptionPane.showMessageDialog(null, "Campos limpos");
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
