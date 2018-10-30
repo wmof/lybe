@@ -122,7 +122,7 @@ public class NovoJFrame extends javax.swing.JFrame {
             if (i != arrayMeta.size() - 1) {
                 sql = sql + arrayMeta.get(i).getNome() + " = '$" + arrayMeta.get(i).getNome() + "', ";
             } else {
-                sql = sql + arrayMeta.get(i).getNome() + " = '$" + arrayMeta.get(i).getNome() + "' WHERE " + arrayMeta.get(0).getNome() + " = '$" + arrayMeta.get(0).getNome() + "'\""
+                sql = sql + arrayMeta.get(i).getNome() + " = '$" + arrayMeta.get(i).getNome() + "' WHERE " + arrayMeta.get(0).getNome() + " = '$" + arrayMeta.get(0).getNome() + "'\";"
                         + "\n\t\tmysql_query($sql, $conexao);\n\t}";
             }
 
@@ -134,12 +134,13 @@ public class NovoJFrame extends javax.swing.JFrame {
         //
         //
         sql = sql + "\n\n\t" + "public function listar() {\n"
-                + "\t\t$conexao = banco::getConexao();\n"
+                + "\t\t$banco = new BDConexao();\n"
+                + "\t\t$conn = $banco->getConexao();\n"
                 + "\t\t$sql = \"SELECT * FROM " + tabelaText.getText() + "\"\n"
-                + "\t\t$consulta = mysql_query($sql, $conexao);\n"
+                + "\t\t$result = $conn->query($sql);\n"
                 + "\t\t$resposta = array();\n"
-                + "\t\twhile ($linha = mysql_fetch_array($consulta)) {"
-                + "\n\t\t\t$" + tabelaText.getText() + " = new " + tabelaText.getText() + "();";
+                + "\t\twhile ($linha = mysqli_fetch_array($result)) {"
+                + "\n\t\t\t$" + tabelaText.getText() + " = new " + nomeProprio(tabelaText.getText()) + "();";
         for (int i = 0; i < arrayMeta.size(); i++) {
             sql = sql + "\n\t\t\t$" + tabelaText.getText() + "->set" + nomeProprio(arrayMeta.get(i).getNome()) + "($linha[\"" + arrayMeta.get(i).getNome() + "\"]);";
         }
