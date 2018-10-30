@@ -70,10 +70,11 @@ public class NovoJFrame extends javax.swing.JFrame {
                 //
                 //
                 + "\tpublic function adicionar($" + nomeProprio(tabelaText.getText()) + "){\n "
-                + "\t\t$conexao = banco::getConexao();\n";
+                + "\t\t$banco = new BDConexao();"
+                + "\t\t$conn = $banco->getConexao();\n";
         for (int i = 0; i < arrayMeta.size(); i++) {
             aux = nomeProprio(arrayMeta.get(i).getNome());
-            sql = sql + "\t\t$" + arrayMeta.get(i).getNome() + " = mysql_real_escape_string($" + nomeProprio(tabelaText.getText()) + "->get" + aux + "());\n";
+            sql = sql + "\t\t$" + arrayMeta.get(i).getNome() + " = mysqli_real_escape_string($" + nomeProprio(tabelaText.getText()) + "->get" + aux + "());\n";
         }
         sql = sql + "\t\t$sql = \"INSERT INTO " + tabelaText.getText() + " (";
         for (int i = 0; i < arrayMeta.size(); i++) {
@@ -88,7 +89,7 @@ public class NovoJFrame extends javax.swing.JFrame {
                 sql = sql + "'&" + arrayMeta.get(i).getNome() + "', ";
             } else {
                 sql = sql + "'$" + arrayMeta.get(i).getNome() + "')\";"
-                        + "\n\t\tmysql_query($sql, $conexao);\n\t}"; //Quando for o ultimo
+                        + "\n\t\tconn->query($sql);\n\t}"; //Quando for o ultimo
             }
         }
 
@@ -99,11 +100,12 @@ public class NovoJFrame extends javax.swing.JFrame {
         //
         sql = sql + "\n\n\t"
                 + "public function deletar($" + nomeProprio(tabelaText.getText()) + "){\n "
-                + "\t\t$conexao = banco::getConexao();\n";
-        sql = sql + "\t\t$" + arrayMeta.get(0).getNome() + " = mysql_real_escape_string($" + nomeProprio(tabelaText.getText()) + "->get" + nomeProprio(arrayMeta.get(0).getNome()) + "());\n";
+                + "\t\t$banco = new BDConexao();"
+                + "\t\t$conn = $banco->getConexao();\n";
+        sql = sql + "\t\t$" + arrayMeta.get(0).getNome() + " = mysqli_real_escape_string($" + nomeProprio(tabelaText.getText()) + "->get" + nomeProprio(arrayMeta.get(0).getNome()) + "());\n";
 
         sql = sql + "\t\t$sql = \"DELETE FROM  " + tabelaText.getText() + " WHERE " + arrayMeta.get(0).getNome() + " = $" + arrayMeta.get(0).getNome() + "\";"
-                + "\n\t\tmysql_query($sql, $conexao);\n\t}";
+                + "\n\t\tconn->query($sql);\n\t}";
 
         //
         //
@@ -112,10 +114,11 @@ public class NovoJFrame extends javax.swing.JFrame {
         //
         sql = sql + "\n\n\t"
                 + "public function alterar($" + nomeProprio(tabelaText.getText()) + "){\n "
-                + "\t\t$conexao = banco::getConexao();\n";
+                + "\t\t$banco = new BDConexao();"
+                + "\t\t$conn = $banco->getConexao();\n";
         for (int i = 0; i < arrayMeta.size(); i++) {
             aux = nomeProprio(arrayMeta.get(i).getNome());
-            sql = sql + "\t\t$" + arrayMeta.get(i).getNome() + " = mysql_real_escape_string($" + nomeProprio(tabelaText.getText()) + "->get" + aux + "());\n";
+            sql = sql + "\t\t$" + arrayMeta.get(i).getNome() + " = mysqli_real_escape_string($" + nomeProprio(tabelaText.getText()) + "->get" + aux + "());\n";
         }
         sql = sql + "\t\t$sql = \"UPDATE " + tabelaText.getText() + " SET ";
         for (int i = 1; i < arrayMeta.size(); i++) {
@@ -123,7 +126,7 @@ public class NovoJFrame extends javax.swing.JFrame {
                 sql = sql + arrayMeta.get(i).getNome() + " = '$" + arrayMeta.get(i).getNome() + "', ";
             } else {
                 sql = sql + arrayMeta.get(i).getNome() + " = '$" + arrayMeta.get(i).getNome() + "' WHERE " + arrayMeta.get(0).getNome() + " = '$" + arrayMeta.get(0).getNome() + "'\";"
-                        + "\n\t\tmysql_query($sql, $conexao);\n\t}";
+                        + "\n\t\t$conn->query($sql);\n\t}";
             }
 
         }
@@ -134,7 +137,7 @@ public class NovoJFrame extends javax.swing.JFrame {
         //
         //
         sql = sql + "\n\n\t" + "public function listar() {\n"
-                + "\t\t$banco = new BDConexao();\n"
+                + "\t\t$banco = new BDConexao();"
                 + "\t\t$conn = $banco->getConexao();\n"
                 + "\t\t$sql = \"SELECT * FROM " + tabelaText.getText() + "\"\n"
                 + "\t\t$result = $conn->query($sql);\n"
