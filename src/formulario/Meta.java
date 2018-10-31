@@ -7,7 +7,7 @@ package formulario;
 
 /**
  *
- * @author Magnero
+ * @author Leto
  */
 public class Meta {
 

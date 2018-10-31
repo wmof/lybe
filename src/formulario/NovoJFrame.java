@@ -69,7 +69,7 @@ public class NovoJFrame extends javax.swing.JFrame {
                 //Adicionar
                 //
                 //
-                + "\tpublic function adicionar($" + nomeProprio(tabelaText.getText()) + "){\n "
+                + "\tpublic function insert($" + nomeProprio(tabelaText.getText()) + "){\n "
                 + "\t\t$banco = new BDConexao();"
                 + "\t\t$conn = $banco->getConexao();\n";
         for (int i = 0; i < arrayMeta.size(); i++) {
@@ -92,28 +92,26 @@ public class NovoJFrame extends javax.swing.JFrame {
                         + "\n\t\tconn->query($sql);\n\t}"; //Quando for o ultimo
             }
         }
-
         //
         //
         //Deletar
         //
         //
         sql = sql + "\n\n\t"
-                + "public function deletar($" + nomeProprio(tabelaText.getText()) + "){\n "
+                + "public function delete($" + nomeProprio(tabelaText.getText()) + "){\n "
                 + "\t\t$banco = new BDConexao();"
                 + "\t\t$conn = $banco->getConexao();\n";
         sql = sql + "\t\t$" + arrayMeta.get(0).getNome() + " = mysqli_real_escape_string($" + nomeProprio(tabelaText.getText()) + "->get" + nomeProprio(arrayMeta.get(0).getNome()) + "());\n";
 
         sql = sql + "\t\t$sql = \"DELETE FROM  " + tabelaText.getText() + " WHERE " + arrayMeta.get(0).getNome() + " = $" + arrayMeta.get(0).getNome() + "\";"
                 + "\n\t\tconn->query($sql);\n\t}";
-
         //
         //
         //Alterar
         //
         //
         sql = sql + "\n\n\t"
-                + "public function alterar($" + nomeProprio(tabelaText.getText()) + "){\n "
+                + "public function update($" + nomeProprio(tabelaText.getText()) + "){\n "
                 + "\t\t$banco = new BDConexao();"
                 + "\t\t$conn = $banco->getConexao();\n";
         for (int i = 0; i < arrayMeta.size(); i++) {
@@ -130,13 +128,12 @@ public class NovoJFrame extends javax.swing.JFrame {
             }
 
         }
-
         //
         //
         //Lista
         //
         //
-        sql = sql + "\n\n\t" + "public function listar() {\n"
+        sql = sql + "\n\n\t" + "public function select() {\n"
                 + "\t\t$banco = new BDConexao();"
                 + "\t\t$conn = $banco->getConexao();\n"
                 + "\t\t$sql = \"SELECT * FROM " + tabelaText.getText() + "\"\n"
@@ -153,6 +150,79 @@ public class NovoJFrame extends javax.swing.JFrame {
         sql = sql + "\t}\n}";
         return sql;
     }
+
+    public String gerarController(ArrayList<Meta> arrayMeta) {
+
+        if (arrayMeta.size() == 0) {
+            JOptionPane.showMessageDialog(null, "Sem atributos");
+            return null;
+        }
+        sql = "<?php\n"
+                + "require_once(\"BD" + tabelaText.getText() + ".php\");\n"
+                + "require_once(\"" + tabelaText.getText() + ".php\");\n\n"
+                + "class Valida_" + nomeProprio(tabelaText.getText()) + "{\n";
+        //
+        //
+        //Adicionar
+        //
+        //
+        sql = sql + "\n\tpublic function insert($dados){\n "
+                + "\n\t\t$" + tabelaText.getText() + " = new " + nomeProprio(tabelaText.getText()) + "();\n";
+        for (int i = 0; i < arrayMeta.size(); i++) {
+            aux = nomeProprio(arrayMeta.get(i).getNome());
+            sql = sql + "\t\t$" + tabelaText.getText() + "->Set" + aux + "($_POST[\'" + arrayMeta.get(i).getNome() + "\']);\n";
+        }
+        sql = sql + "\t\t$bd = new BD" + nomeProprio(tabelaText.getText()) + " ();\n"
+                + "\t\t$bd->insert($" + tabelaText.getText() + ");\n"
+                + "\t\tprint (\"" + nomeProprio(tabelaText.getText()) + " Adicionado\");\n"
+                + "\t}";
+        //
+        //
+        //Deletar
+        //
+        //
+        sql = sql + "\n\n\tpublic function delete($dados){\n "
+                + "\n\t\t$" + tabelaText.getText() + " = new " + nomeProprio(tabelaText.getText()) + "();\n";
+        aux = nomeProprio(arrayMeta.get(0).getNome());
+        sql = sql + "\t\t$" + tabelaText.getText() + "->Set" + aux + "($_POST[\')" + arrayMeta.get(0).getNome() + "\']);\n";
+
+        sql = sql + "\t\t$bd = new BD" + nomeProprio(tabelaText.getText()) + " ();\n"
+                + "\t\t$bd->delete($" + tabelaText.getText() + ");\n"
+                + "\t\tprint (\"" + nomeProprio(tabelaText.getText()) + " Deletado\");\n"
+                + "\t}";
+        //
+        //
+        //Alterar
+        //
+        //
+        sql = sql + "\n\n\tpublic function update($dados){\n "
+                + "\n\t\t$" + tabelaText.getText() + " = new " + nomeProprio(tabelaText.getText()) + "();\n";
+        for (int i = 0; i < arrayMeta.size(); i++) {
+            aux = nomeProprio(arrayMeta.get(i).getNome());
+            sql = sql + "\t\t$" + tabelaText.getText() + "->Set" + aux + "($_POST[\'" + arrayMeta.get(i).getNome() + "\']);\n";
+        }
+        sql = sql + "\t\t$bd = new BD" + nomeProprio(tabelaText.getText()) + " ();\n"
+                + "\t\t$bd->update($" + tabelaText.getText() + ");\n"
+                + "\t\tprint (\"" + nomeProprio(tabelaText.getText()) + " Alterado\");\n"
+                + "\t}\n}\n";
+        //
+        //
+        //Method
+        //
+        //
+        sql = sql + "\nif($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['method'])) {\n"
+                + "\t$method = $_POST['method'];\n"
+                + "\tif(method_exists('Valida_"+nomeProprio(tabelaText.getText())+"', $method)) {\n"
+                + "\t\t$valida = new Valida_"+nomeProprio(tabelaText.getText())+";\n"
+                + "\t\t$valida->$method($_POST);\n"
+                + "\t}\n"
+                + "\telse {\n"
+                + "\t\techo 'Metodo incorreto';\n"
+                + "\t}\n"
+                + "}";
+        return sql;
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -174,6 +244,10 @@ public class NovoJFrame extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextinstrucoes = new javax.swing.JTextArea();
         jComboTipo = new javax.swing.JComboBox<>();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        controllerText = new javax.swing.JTextArea();
+        jLabel6 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -204,7 +278,7 @@ public class NovoJFrame extends javax.swing.JFrame {
         repositorioText.setRows(5);
         jScrollPane2.setViewportView(repositorioText);
 
-        jLabel1.setText("Objeto");
+        jLabel1.setText("Model");
 
         jLabel2.setText("Repositorio");
 
@@ -231,6 +305,19 @@ public class NovoJFrame extends javax.swing.JFrame {
 
         jComboTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "INT", "VARCHAR(255)", "VARCHAR(100)", "VARCHAR(20)" }));
 
+        controllerText.setColumns(20);
+        controllerText.setRows(5);
+        jScrollPane4.setViewportView(controllerText);
+
+        jLabel6.setText("Controller");
+
+        jButton2.setText("Gerar Controller");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -240,9 +327,9 @@ public class NovoJFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(atributoText, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)
+                            .addComponent(atributoText)
                             .addComponent(jLabel3)
-                            .addComponent(tabelaText, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)
+                            .addComponent(tabelaText)
                             .addComponent(jLabel4)
                             .addComponent(jComboTipo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
@@ -253,20 +340,22 @@ public class NovoJFrame extends javax.swing.JFrame {
                                 .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1)
-                                    .addComponent(addButton))
-                                .addGap(297, 297, 297)))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(bdButton)
-                                .addGap(193, 193, 193)
-                                .addComponent(jButton1))
+                            .addComponent(jLabel1)
+                            .addComponent(addButton)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel2)
-                            .addComponent(jScrollPane2))))
+                            .addComponent(bdButton))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton2)
+                                .addGap(187, 187, 187)
+                                .addComponent(jButton1))
+                            .addComponent(jLabel6)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -291,15 +380,19 @@ public class NovoJFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(addButton)
                     .addComponent(bdButton)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jLabel2))
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1))
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1)))
                 .addContainerGap())
         );
 
@@ -332,7 +425,7 @@ public class NovoJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_atributoTextActionPerformed
 
     private void bdButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bdButtonActionPerformed
-        
+
         repositorioText.setText(gerarDao(arrayMetaGlobal));
 
     }//GEN-LAST:event_bdButtonActionPerformed
@@ -345,8 +438,12 @@ public class NovoJFrame extends javax.swing.JFrame {
         tabelaText.enable(true);
         atributoText.setText("");
         JOptionPane.showMessageDialog(null, "Campos limpos");
-        
+
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        controllerText.setText(gerarController(arrayMetaGlobal));
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -387,16 +484,20 @@ public class NovoJFrame extends javax.swing.JFrame {
     private javax.swing.JButton addButton;
     private javax.swing.JTextField atributoText;
     private javax.swing.JButton bdButton;
+    private javax.swing.JTextArea controllerText;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JComboBox<String> jComboTipo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTextArea jTextinstrucoes;
     private javax.swing.JTextArea objText;
     private javax.swing.JTextArea repositorioText;
