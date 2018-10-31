@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package wmofsoluctions;
-import formulario.NovoJFrame;
 
 /**
  *
@@ -16,7 +15,7 @@ public class WmofSoluctions {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        NovoJFrame abrir = new NovoJFrame();
+        Tela abrir = new Tela();
         abrir.show();
     }
     
