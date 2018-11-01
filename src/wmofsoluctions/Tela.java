@@ -71,11 +71,11 @@ public class Tela extends javax.swing.JFrame {
                 //
                 //
                 + "\tpublic function insert($" + nomeProprio(tabelaText.getText()) + "){\n "
-                + "\t\t$banco = new BDConexao();"
+                + "\t\t$banco = new BDConexao();\n"
                 + "\t\t$conn = $banco->getConexao();\n";
         for (int i = 0; i < arrayMeta.size(); i++) {
             aux = nomeProprio(arrayMeta.get(i).getNome());
-            sql = sql + "\t\t$" + arrayMeta.get(i).getNome() + " = mysqli_real_escape_string($" + nomeProprio(tabelaText.getText()) + "->get" + aux + "());\n";
+            sql = sql + "\t\t$" + arrayMeta.get(i).getNome() + " = ($" + nomeProprio(tabelaText.getText()) + "->get" + aux + "());\n";
         }
         sql = sql + "\t\t$sql = \"INSERT INTO " + tabelaText.getText() + " (";
         for (int i = 0; i < arrayMeta.size(); i++) {
@@ -87,10 +87,10 @@ public class Tela extends javax.swing.JFrame {
         }
         for (int i = 0; i < arrayMeta.size(); i++) {
             if (i != arrayMeta.size() - 1) {
-                sql = sql + "'&" + arrayMeta.get(i).getNome() + "', ";
+                sql = sql + "'$" + arrayMeta.get(i).getNome() + "', ";
             } else {
                 sql = sql + "'$" + arrayMeta.get(i).getNome() + "')\";"
-                        + "\n\t\tconn->query($sql);\n\t}"; //Quando for o ultimo
+                        + "\n\t\t$conn->query($sql);\n\t}"; //Quando for o ultimo
             }
         }
         //
@@ -100,12 +100,12 @@ public class Tela extends javax.swing.JFrame {
         //
         sql = sql + "\n\n\t"
                 + "public function delete($" + nomeProprio(tabelaText.getText()) + "){\n "
-                + "\t\t$banco = new BDConexao();"
+                + "\t\t$banco = new BDConexao();\n"
                 + "\t\t$conn = $banco->getConexao();\n";
-        sql = sql + "\t\t$" + arrayMeta.get(0).getNome() + " = mysqli_real_escape_string($" + nomeProprio(tabelaText.getText()) + "->get" + nomeProprio(arrayMeta.get(0).getNome()) + "());\n";
+        sql = sql + "\t\t$" + arrayMeta.get(0).getNome() + " = $" + nomeProprio(tabelaText.getText()) + "->get" + nomeProprio(arrayMeta.get(0).getNome()) + "();\n";
 
         sql = sql + "\t\t$sql = \"DELETE FROM  " + tabelaText.getText() + " WHERE " + arrayMeta.get(0).getNome() + " = $" + arrayMeta.get(0).getNome() + "\";"
-                + "\n\t\tconn->query($sql);\n\t}";
+                + "\n\t\t$conn->query($sql);\n\t}";
         //
         //
         //Alterar
@@ -113,11 +113,11 @@ public class Tela extends javax.swing.JFrame {
         //
         sql = sql + "\n\n\t"
                 + "public function update($" + nomeProprio(tabelaText.getText()) + "){\n "
-                + "\t\t$banco = new BDConexao();"
+                + "\t\t$banco = new BDConexao();\n"
                 + "\t\t$conn = $banco->getConexao();\n";
         for (int i = 0; i < arrayMeta.size(); i++) {
             aux = nomeProprio(arrayMeta.get(i).getNome());
-            sql = sql + "\t\t$" + arrayMeta.get(i).getNome() + " = mysqli_real_escape_string($" + nomeProprio(tabelaText.getText()) + "->get" + aux + "());\n";
+            sql = sql + "\t\t$" + arrayMeta.get(i).getNome() + " = $" + nomeProprio(tabelaText.getText()) + "->get" + aux + "();\n";
         }
         sql = sql + "\t\t$sql = \"UPDATE " + tabelaText.getText() + " SET ";
         for (int i = 1; i < arrayMeta.size(); i++) {
@@ -135,9 +135,9 @@ public class Tela extends javax.swing.JFrame {
         //
         //
         sql = sql + "\n\n\t" + "public function select() {\n"
-                + "\t\t$banco = new BDConexao();"
+                + "\t\t$banco = new BDConexao();\n"
                 + "\t\t$conn = $banco->getConexao();\n"
-                + "\t\t$sql = \"SELECT * FROM " + tabelaText.getText() + "\"\n"
+                + "\t\t$sql = \"SELECT * FROM " + tabelaText.getText() + "\";\n"
                 + "\t\t$result = $conn->query($sql);\n"
                 + "\t\t$resposta = array();\n"
                 + "\t\twhile ($linha = mysqli_fetch_array($result)) {"
@@ -174,7 +174,7 @@ public class Tela extends javax.swing.JFrame {
             aux = nomeProprio(arrayMeta.get(i).getNome());
             valida = valida + "\t\t$" + tabelaText.getText() + "->Set" + aux + "($_POST[\'" + arrayMeta.get(i).getNome() + "\']);\n";
         }
-        valida = valida + "\t\t$bd = new BD" + nomeProprio(tabelaText.getText()) + " ();\n"
+        valida = valida + "\t\t$bd = new BD" + nomeProprio(tabelaText.getText()) + "();\n"
                 + "\t\t$bd->insert($" + tabelaText.getText() + ");\n"
                 + "\t\tprint (\"" + nomeProprio(tabelaText.getText()) + " Adicionado\");\n"
                 + "\t}";
@@ -186,9 +186,9 @@ public class Tela extends javax.swing.JFrame {
         valida = valida + "\n\n\tpublic function delete($dados){\n "
                 + "\n\t\t$" + tabelaText.getText() + " = new " + nomeProprio(tabelaText.getText()) + "();\n";
         aux = nomeProprio(arrayMeta.get(0).getNome());
-        valida = valida + "\t\t$" + tabelaText.getText() + "->Set" + aux + "($_POST[\')" + arrayMeta.get(0).getNome() + "\']);\n";
+        valida = valida + "\t\t$" + tabelaText.getText() + "->Set" + aux + "($_POST[\'" + arrayMeta.get(0).getNome() + "\']);\n";
 
-        valida = valida + "\t\t$bd = new BD" + nomeProprio(tabelaText.getText()) + " ();\n"
+        valida = valida + "\t\t$bd = new BD" + nomeProprio(tabelaText.getText()) + "();\n"
                 + "\t\t$bd->delete($" + tabelaText.getText() + ");\n"
                 + "\t\tprint (\"" + nomeProprio(tabelaText.getText()) + " Deletado\");\n"
                 + "\t}";
@@ -203,7 +203,7 @@ public class Tela extends javax.swing.JFrame {
             aux = nomeProprio(arrayMeta.get(i).getNome());
             valida = valida + "\t\t$" + tabelaText.getText() + "->Set" + aux + "($_POST[\'" + arrayMeta.get(i).getNome() + "\']);\n";
         }
-        valida = valida + "\t\t$bd = new BD" + nomeProprio(tabelaText.getText()) + " ();\n"
+        valida = valida + "\t\t$bd = new BD" + nomeProprio(tabelaText.getText()) + "();\n"
                 + "\t\t$bd->update($" + tabelaText.getText() + ");\n"
                 + "\t\tprint (\"" + nomeProprio(tabelaText.getText()) + " Alterado\");\n"
                 + "\t}\n}\n";
@@ -250,7 +250,7 @@ public class Tela extends javax.swing.JFrame {
         for (int i = 0; i < arrayMeta.size(); i++) {
             crud = crud + "<td><i>$" + arrayMeta.get(i).getNome() + "</i></td>";
         }
-        crud = crud + "\"\n\t}\n"
+        crud = crud + "\";\n\t}\n"
                 + "\tcatch (Exception $e) {\n"
                 + "\t\techo \"ERRO!!\";\n"
                 + "\t\tbreak;\n"
@@ -260,7 +260,7 @@ public class Tela extends javax.swing.JFrame {
                 + "</table>\n";
         //Agora Form
         crud = crud + "<h2>Formulário de cadastro de Afiliado</h2>\n"
-                + "<form method=\"post\" action=\"validafiliado.php\" class=\"form\">\n";
+                + "<form method=\"post\" action=\"valida"+tabelaText.getText()+".php\" class=\"form\">\n";
 
         for (int i = 0; i < arrayMeta.size(); i++) {
             crud = crud + "\t<p class=\"\">\n"
