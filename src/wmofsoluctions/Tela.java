@@ -534,7 +534,7 @@ public class Tela extends javax.swing.JFrame {
     }//GEN-LAST:event_bdButtonActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        //arrayMeta.clear();
+        arrayMetaGlobal.clear();
         repositorioText.setText("");
         objText.setText("");
         tabelaText.setText("");
