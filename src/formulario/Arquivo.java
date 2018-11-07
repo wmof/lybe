@@ -13,17 +13,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 public class Arquivo {
-	private File arquivo;
-	public Arquivo() {
-		arquivo = new File("arquivo.txt");
+	public Arquivo() {		
 	}
-	public void escreveTexto() throws IOException{
+	public void gerarArquivo(String titulo, String conteudo) throws IOException{
+                File arquivo = new File(titulo);
 		FileWriter inserindo = new FileWriter(arquivo, true);
-		inserindo.write("1. Mario"+"\n");
-		inserindo.write("2. Luigi"+"\n");
-		inserindo.write("3. Jose"+"\n");
-		inserindo.write("4. Pedro"+"\n");
-		inserindo.write("5. Francisco");
+		inserindo.write(conteudo);
 		inserindo.close();
 	}
 }

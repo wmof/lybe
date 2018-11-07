@@ -6,7 +6,10 @@
 package wmofsoluctions;
 
 import formulario.*;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -62,8 +65,8 @@ public class Tela extends javax.swing.JFrame {
             return null;
         }
         sql = "<?php\n"
-                + "require_once(\"banco.php\");\n"
-                + "require_once(\"" + tabelaText.getText() + ".php\");\n\n"
+                + "require_once(\"Banco.php\");\n"
+                + "require_once(\"" + nomeProprio(tabelaText.getText()) + ".php\");\n\n"
                 + "class BD" + nomeProprio(tabelaText.getText()) + "{\n"
                 //
                 //
@@ -160,7 +163,7 @@ public class Tela extends javax.swing.JFrame {
             return null;
         }
         valida = "<?php\n"
-                + "require_once(\"BD" + tabelaText.getText() + ".php\");\n"
+                + "require_once(\"BD_" + tabelaText.getText() + ".php\");\n"
                 + "require_once(\"" + tabelaText.getText() + ".php\");\n\n"
                 + "class Valida_" + nomeProprio(tabelaText.getText()) + "{\n";
         //
@@ -235,7 +238,7 @@ public class Tela extends javax.swing.JFrame {
         }
         crud = crud + "\n\t</tr>\n"
                 + "<?php\n"
-                + "require_once (\"bd" + nomeProprio(tabelaText.getText()) + ".php\");\n"
+                + "require_once (\"BD_" + nomeProprio(tabelaText.getText()) + ".php\");\n"
                 + "require_once (\"" + nomeProprio(tabelaText.getText()) + ".php\");\n"
                 + "$bd = new BD" + nomeProprio(tabelaText.getText()) + "();\n"
                 + "$array" + nomeProprio(tabelaText.getText()) + " = $bd->select();\n"
@@ -260,12 +263,12 @@ public class Tela extends javax.swing.JFrame {
                 + "</table>\n";
         //Agora Form
         crud = crud + "<h2>Formulário de cadastro de Afiliado</h2>\n"
-                + "<form method=\"post\" action=\"valida"+tabelaText.getText()+".php\" class=\"form\">\n";
+                + "<form method=\"post\" action=\"Valida_"+nomeProprio(tabelaText.getText())+".php\" class=\"form\">\n";
 
         for (int i = 0; i < arrayMeta.size(); i++) {
             crud = crud + "\t<p class=\"\">\n"
                     + "\t\t<label for=\""+arrayMeta.get(i).getNome()+"\">" + nomeProprio(arrayMeta.get(i).getNome())+": </label>\n"
-                    + "\t\t<input type=\"text\" name=\"" + arrayMeta.get(i).getNome() + "\" required />\n"
+                    + "\t\t<input type=\"text\" name=\"" + arrayMeta.get(i).getNome() + "\"/>\n"
                     + "\t</p>\n";
         }
 
@@ -313,6 +316,7 @@ public class Tela extends javax.swing.JFrame {
         crudText = new javax.swing.JTextArea();
         jButton3 = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
+        jButton4 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -396,6 +400,13 @@ public class Tela extends javax.swing.JFrame {
 
         jLabel7.setText("View");
 
+        jButton4.setText("Gerar Arquivos");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -404,9 +415,12 @@ public class Tela extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel1)
-                            .addComponent(addButton)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(addButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton4))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -415,9 +429,7 @@ public class Tela extends javax.swing.JFrame {
                             .addComponent(bdButton))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton2)
-                                .addGap(102, 102, 102))
+                            .addComponent(jButton2)
                             .addComponent(jLabel6)
                             .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -470,7 +482,8 @@ public class Tela extends javax.swing.JFrame {
                     .addComponent(bdButton)
                     .addComponent(jButton1)
                     .addComponent(jButton2)
-                    .addComponent(jButton3))
+                    .addComponent(jButton3)
+                    .addComponent(jButton4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
@@ -539,6 +552,40 @@ public class Tela extends javax.swing.JFrame {
         crudText.setText(gerarcrud(arrayMetaGlobal));
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        Arquivo arquivoBD = new Arquivo();
+        String titulo = "BD_"+nomeProprio(tabelaText.getText()+".php");
+        try {
+            arquivoBD.gerarArquivo(titulo, gerarDao(arrayMetaGlobal));
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        
+        Arquivo arquivoObj = new Arquivo();
+        titulo = nomeProprio(tabelaText.getText()+".php");
+        try {
+            arquivoObj.gerarArquivo(titulo, gerarOb(arrayMetaGlobal));
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        
+        Arquivo arquivoCrud = new Arquivo();
+        titulo = "Crud_"+nomeProprio(tabelaText.getText()+".php");
+        try {
+            arquivoCrud.gerarArquivo(titulo, gerarcrud(arrayMetaGlobal));
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        
+        Arquivo arquivoValida = new Arquivo();
+        titulo = "Valida_"+nomeProprio(tabelaText.getText()+".php");
+        try {
+            arquivoValida.gerarArquivo(titulo, gerarController(arrayMetaGlobal));
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -584,6 +631,7 @@ public class Tela extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JComboBox<String> jComboTipo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
